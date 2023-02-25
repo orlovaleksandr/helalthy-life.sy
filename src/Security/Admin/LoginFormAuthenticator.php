@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
@@ -24,10 +25,29 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'admin_login';
     private UserRepository $userRepository;
+    private RoleHierarchyInterface $hierarchy;
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator, UserRepository $userRepository)
+    public function __construct(
+        private UrlGeneratorInterface $urlGenerator,
+        UserRepository $userRepository,
+        RoleHierarchyInterface $hierarchy
+    )
     {
         $this->userRepository = $userRepository;
+        $this->hierarchy = $hierarchy;
+    }
+
+    public function supports(Request $request): bool
+    {
+        if (
+            !$request->request->get('email')
+            || !($user = $this->userRepository->findOneBy(['email' => $request->request->get('email')]))
+            || !in_array('ROLE_ADMIN', $user->getRoles(), true)
+        ) {
+            return false;
+        }
+
+        return $request->isMethod('POST') && $this->getLoginUrl($request) === $request->getBaseUrl().$request->getPathInfo();
     }
 
     public function authenticate(Request $request): Passport
@@ -35,11 +55,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 
         $email = $request->request->get('email', '');
         /** @var User $user */
-        $user = $this->userRepository->findBy(['email' => $email]);
 
-//        if (!in_array('ROLE_ADMIN', $user->roles)) {
-//            return new RedirectResponse($this->urlGenerator->generate('admin_login'));
-//        }
 
         $request->getSession()->set(Security::LAST_USERNAME, $email);
 
@@ -58,7 +74,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('admin_login'));
+        return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
     }
 
     protected function getLoginUrl(Request $request): string

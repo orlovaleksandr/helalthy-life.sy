@@ -23,7 +23,7 @@ security:
                 lifetime: 604800 # 1week
                 path: /admin/
             logout:
-                path: /admin/logout
+                path: admin_logout
         main:
             lazy: true
             provider: app_user_provider
@@ -47,7 +47,8 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/profile, roles: ROLE_USER }
-#        - { path: ^/admin, roles: [ROLE_ADMIN, ROLE_USER] }
+        - { path: ^/admin/login}
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
 when@test:
     security:
