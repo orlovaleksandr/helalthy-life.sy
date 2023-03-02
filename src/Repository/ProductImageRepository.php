@@ -53,6 +53,20 @@ class ProductImageRepository extends ServiceEntityRepository
         }
     }
 
+    public function removeImageFromProduct(ProductImage $productImage, string $productImageDir): void
+    {
+        $smallFilePath = $productImageDir . '/' . $productImage->getFilenameSmall();
+        $this->filesystemWorker->remove($smallFilePath);
+
+        $middleFilePath = $productImageDir . '/' . $productImage->getFilenameMiddle();
+        $this->filesystemWorker->remove($middleFilePath);
+
+        $bigFilePath = $productImageDir . '/' . $productImage->getFilenameBig();
+        $this->filesystemWorker->remove($bigFilePath);
+
+        $this->remove($productImage, true);
+    }
+
     public function saveImageForProduct(string $productDir, string $tempImageFilename = null): ProductImage|null
     {
         if (!$tempImageFilename) {
