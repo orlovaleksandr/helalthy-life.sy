@@ -47,6 +47,12 @@ class ProductRepository extends ServiceEntityRepository
         }
     }
 
+    public function setIsDeleted(Product $product): void
+    {
+        $product->setIsDeleted(true);
+        $this->save($product, true);
+    }
+
     public function getProductImagesDir(Product $product): string
     {
         return sprintf('%s/%s', $this->productImagesDir, $product->getId());
