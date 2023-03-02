@@ -30,41 +30,4 @@ class DefaultController extends AbstractController
             'products' => $products,
         ]);
     }
-
-    #[Route(path: '/product-add', name: 'productAdd')]
-    public function productAdd(): Response
-    {
-        $product = new Product();
-        $product->setTitle('Product' . random_int(1, 100));
-        $product->setDescription('Test');
-        $product->setPrice(10);
-        $product->setQuantity(1);
-
-        $this->productRepository->save($product, true);
-
-        return $this->redirectToRoute('homePage');
-    }
-
-    #[Route(path: '/edit-product/{id}', name: 'editProduct', requirements: ['id' => '\d+'], methods: ['GET', 'POST'],)]
-    #[Route(path: '/add-product', name: 'addProduct', methods: ['GET', 'POST'],)]
-    public function editProduct(Request $request, int $id = null): Response
-    {
-        if ($id) {
-            $product = $this->productRepository->find($id);
-        } else {
-            $product = new Product();
-        }
-
-        $form = $this->createForm(EditProductFormType::class, $product);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->productRepository->save($form->getData(), true);
-
-            return $this->redirectToRoute('editProduct', ['id' => $product->getId()]);
-        }
-
-        return $this->render('main/default/edit_product.html.twig', ['form' => $form->createView()]);
-    }
 }
