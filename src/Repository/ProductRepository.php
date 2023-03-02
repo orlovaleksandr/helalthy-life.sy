@@ -16,9 +16,17 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private string $productImagesDir;
+    private ProductImageRepository $productImageRepository;
+
+    public function __construct(
+        ManagerRegistry $registry,
+        ProductImageRepository $productImageRepository,
+        string $productImagesDir)
     {
         parent::__construct($registry, Product::class);
+        $this->productImagesDir = $productImagesDir;
+        $this->productImageRepository = $productImageRepository;
     }
 
     public function save(Product $entity, bool $flush = false): void
@@ -37,6 +45,26 @@ class ProductRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function getProductImagesDir(Product $product): string
+    {
+        return sprintf('%s/%s', $this->productImagesDir, $product->getId());
+    }
+
+    public function uploadProductImages(Product $product, string $tempImageFilename = null): Product
+    {
+        if (!$tempImageFilename) {
+            return $product;
+        }
+
+        $productDir = $this->getProductImagesDir($product);
+        $productImage = $this->productImageRepository->saveImageForProduct($productDir, $tempImageFilename);
+        $productImage->setProduct($product);
+
+        $product->addProductImage($productImage);
+
+        return $product;
     }
 
 //    /**

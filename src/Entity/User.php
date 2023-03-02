@@ -50,6 +50,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?bool $isDeleted = null;
 
+    public function __construct()
+    {
+        $this->isDeleted = false;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
