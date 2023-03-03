@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Product;
+use App\Form\DTO\EditProductDto;
 use App\Form\EditProductFormType;
 use App\Form\Handler\ProductFormHandler;
 use App\Repository\ProductRepository;
@@ -39,23 +40,30 @@ class ProductController extends AbstractController
     #[Route('/add', name: 'add')]
     public function edit(Request $request, ProductFormHandler $productFormHandler, Product $product = null): Response
     {
-        if (!$product) {
-            $product = new Product();
-        }
+        $productModel = EditProductDto::makeFromProduct($product);
 
-        $form = $this->createForm(EditProductFormType::class, $product);
+        $form = $this->createForm(EditProductFormType::class, $productModel);
         $form->handleRequest($request);
 
-        if ($product && $form->isSubmitted() && $form->isValid()) {
-            $product = $productFormHandler->processEditForm($product, $form);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $product = $productFormHandler->processEditForm($productModel, $form);
+
+            $this->addFlash(type: 'success', message: 'Your changes ware saved!');
 
             return $this->redirectToRoute('admin_product_edit', ['id' => $product->getId()]);
         }
 
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash(type: 'warning', message: 'Something went wrong! Please check you form!');
+        }
+
+        $images = $product ? $product->getProductImages()->getValues() : [];
+
+
         return $this->render('admin/product/edit.html.twig', [
             'form' => $form->createView(),
             'product' => $product,
-            'images' => $product->getProductImages()->getValues() ?? []
+            'images' => $images
         ]);
     }
 
@@ -63,6 +71,8 @@ class ProductController extends AbstractController
     public function delete(Product $product): Response
     {
         $this->productRepository->setIsDeleted($product, true);
+
+        $this->addFlash(type: 'warning', message: 'The product was successful deleted!');
 
         return $this->redirectToRoute('admin_product_list');
     }

@@ -3,6 +3,7 @@
 namespace App\Form\Handler;
 
 use App\Entity\Product;
+use App\Form\DTO\EditProductDto;
 use App\Repository\ProductImageRepository;
 use App\Repository\ProductRepository;
 use App\Service\FileServices\FileSaver;
@@ -25,8 +26,21 @@ class ProductFormHandler
         $this->fileSaver = $fileSaver;
     }
 
-    public function processEditForm(Product $product, Form $form): Product
+    public function processEditForm(EditProductDto $productDto, Form $form): Product|null
     {
+        $product = new Product();
+
+        if ($productDto->id) {
+            $product = $this->productRepository->find($productDto->id);
+        }
+
+        $product->setTitle($productDto->title);
+        $product->setPrice($productDto->price);
+        $product->setQuantity($productDto->quantity);
+        $product->setDescription($productDto->description);
+        $product->setIsPublished($productDto->isPublished);
+        $product->setIsDeleted($productDto->isDeleted);
+
         // TODO: Add a new images with different sizes to prouct
         $this->productRepository->save($product, true);
 

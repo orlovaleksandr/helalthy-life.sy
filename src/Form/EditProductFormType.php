@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Product;
+use App\Form\DTO\EditProductDto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -57,7 +58,6 @@ class EditProductFormType extends AbstractType
             ->add('newImage', FileType::class, [
                 'label' => 'Chose new image',
                 'required' => false,
-                'mapped' => false,
                 'attr' => [
                     'class' => 'form-control-file',
                 ],
@@ -88,7 +88,7 @@ class EditProductFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Product::class,
+            'data_class' => EditProductDto::class,
         ]);
     }
 }
