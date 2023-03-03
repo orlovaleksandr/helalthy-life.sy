@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\UuidV4;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
@@ -49,6 +48,9 @@ class Product
     #[ORM\Column(length: 255, nullable: true)]
     #[Gedmo\Slug(fields: ['title'])]
     private ?string $slug = null;
+
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    private ?Category $category = null;
 
     public function __construct()
     {
@@ -194,6 +196,18 @@ class Product
     public function setSlug(?string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }
