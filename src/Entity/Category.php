@@ -26,8 +26,12 @@ class Category
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
     private Collection $products;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isDeleted = null;
+
     public function __construct()
     {
+        $this->isDeleted = false;
         $this->products = new ArrayCollection();
     }
 
@@ -86,6 +90,18 @@ class Category
                 $product->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isIsDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted(?bool $isDeleted): self
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

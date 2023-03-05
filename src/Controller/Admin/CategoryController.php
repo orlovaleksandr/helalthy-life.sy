@@ -25,7 +25,7 @@ class CategoryController extends AbstractController
     #[Route('/list', name: 'list')]
     public function list(): Response
     {
-        $categories = $this->categoryRepository->findBy([], ['id' => 'DESC']);
+        $categories = $this->categoryRepository->findBy(['isDeleted' => false], ['id' => 'DESC']);
 
         return $this->render('admin/category/list.html.twig', [
             'categories' => $categories
@@ -57,7 +57,7 @@ class CategoryController extends AbstractController
     #[Route('/delete/{id}', name: 'delete')]
     public function delete(Category $category): Response
     {
-        $this->categoryRepository->remove($category, true);
+        $this->categoryRepository->removeWithoutDeleting($category);
 
         $this->addFlash(type: 'warning', message: 'The category was successful deleted!');
 

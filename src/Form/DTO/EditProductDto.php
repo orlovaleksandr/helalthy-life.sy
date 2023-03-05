@@ -2,6 +2,7 @@
 
 namespace App\Form\DTO;
 
+use App\Entity\Category;
 use App\Entity\Product;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,7 +28,11 @@ class EditProductDto
     #[Assert\NotBlank(message: 'Please enter a quantity')]
     #[Assert\GreaterThanOrEqual(value: 0)]
     public int $quantity;
-    public string $description;
+    public string|null $description;
+
+    #[Assert\NotBlank(message: 'Please select a category')]
+    public Category $category;
+
     public bool $isPublished;
     public bool $isDeleted;
 

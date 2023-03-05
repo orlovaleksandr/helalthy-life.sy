@@ -2,8 +2,12 @@
 
 namespace App\Form;
 
+use App\Entity\Category;
 use App\Entity\Product;
 use App\Form\DTO\EditProductDto;
+use App\Repository\CategoryRepository;
+use Doctrine\ORM\Query\Expr;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -17,6 +21,13 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class EditProductFormType extends AbstractType
 {
+    private CategoryRepository $categoryRepository;
+
+    public function __construct(CategoryRepository $categoryRepository)
+    {
+        $this->categoryRepository = $categoryRepository;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -60,6 +71,22 @@ class EditProductFormType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control-file',
+                ],
+            ])
+            ->add('category', EntityType::class, [
+                'label' => 'Category',
+                'required' => true,
+                'class' => Category::class,
+//                'query_builder' => function (CategoryRepository $category) {
+//                    $category->createQueryBuilder('cat')
+//                        ->where('cat.is_deleted = false')
+//                        ->orderBy('cat.title', 'ASC');
+//
+//                },
+                'choices' => $this->categoryRepository->findBy(['isDeleted' => false]),
+                'choice_label' => 'title',
+                'attr' => [
+                    'class' => 'form-control',
                 ],
             ])
             ->add('isPublished', CheckboxType::class, [

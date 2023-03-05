@@ -39,6 +39,19 @@ class CategoryRepository extends ServiceEntityRepository
         }
     }
 
+    public function removeWithoutDeleting(Category $category): void
+    {
+        $category->setIsDeleted(true);
+
+        foreach ($category->getProducts()->getValues() as $product) {
+            $product->setIsDeleted(true);
+        }
+
+        $this->save($category, true);
+
+
+    }
+
 //    /**
 //     * @return Category[] Returns an array of Category objects
 //     */
