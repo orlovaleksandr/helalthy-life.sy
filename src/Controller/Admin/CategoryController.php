@@ -56,7 +56,6 @@ class CategoryController extends AbstractController
             'category' => $category,
             'form' => $form->createView()
         ]);
-
     }
 
     #[Route('/delete/{id}', name: 'delete')]
