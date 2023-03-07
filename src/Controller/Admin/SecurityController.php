@@ -24,6 +24,8 @@ class SecurityController extends AbstractController
     #[Route(path: '/logout', name: 'admin_logout')]
     public function logout(): Response
     {
+        $this->addFlash(type: 'warning', message: 'You was logged out!');
+
         return $this->redirectToRoute('admin_login');
     }
 }

@@ -3,8 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Product;
+use App\Form\Admin\EditProductFormType;
 use App\Form\DTO\EditProductDto;
-use App\Form\EditProductFormType;
 use App\Form\Handler\ProductFormHandler;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

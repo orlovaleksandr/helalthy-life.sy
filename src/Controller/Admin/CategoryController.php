@@ -3,8 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
+use App\Form\Admin\EditCategoryFormType;
 use App\Form\DTO\EditCategoryDto;
-use App\Form\EditCategoryFormType;
 use App\Form\Handler\CategoryFormHandler;
 use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,8 +43,13 @@ class CategoryController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $category = $categoryFormHandler->processEditForm($categoryModel);
+            $this->addFlash(type: 'success', message: 'Your changes ware saved!');
 
             return $this->redirectToRoute('admin_category_edit', ['id' => $category->getId()]);
+        }
+
+        if ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash(type: 'warning', message: 'Something went wrong! Please check you form!');
         }
 
         return $this->render('admin/category/edit.html.twig', [

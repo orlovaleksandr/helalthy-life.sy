@@ -1,32 +1,26 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Main;
 
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class EmbedController extends AbstractController
+class DefaultController extends AbstractController
 {
     private ProductRepository $productRepository;
-
     public function __construct(ProductRepository $productRepository)
     {
         $this->productRepository = $productRepository;
     }
 
-    public function showSimilarProducts($limit = 2, int $categoryId = null): Response
+    #[Route(path: '/', name: 'homePage')]
+    public function index(): Response
     {
-        $params = [];
+        $products = $this->productRepository->findAll();
 
-        if ($categoryId) {
-            $params['category'] = $categoryId;
-        }
-
-        $products = $this->productRepository->findBy($params, orderBy: ['id' => 'DESC'], limit: $limit);
-
-        return $this->render('main/_embed/_similar_products.html.twig', [
+        return $this->render('main/default/index.html.twig', [
             'products' => $products,
         ]);
     }
