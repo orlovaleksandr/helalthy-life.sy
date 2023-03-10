@@ -20,9 +20,4 @@ enum OrderStatus: int
             self::DENIED->value => 'Denied',
         ];
     }
-
-    public static function qwe()
-    {
-        return '123';
-    }
 }
