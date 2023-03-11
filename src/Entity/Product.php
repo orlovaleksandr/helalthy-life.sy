@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -32,20 +35,28 @@ use Symfony\Component\Serializer\Annotation\Groups;
             securityMessage: 'Sorry, but you are not an admin.'
         )
     ],
+    formats: ['jsonld', 'json'],
+    order: ['id' => 'DESC'],
+    paginationClientItemsPerPage: true,
+    paginationEnabled: true
 )]
+#[ApiFilter(BooleanFilter::class, properties: ['isPublished'])]
+#[ApiFilter(SearchFilter::class, properties: [
+    "category" => 'exact'
+])]
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['product:list'])]
+    #[Groups(['product:list', 'product:item'])]
     #[ApiProperty(identifier: false)]
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
     #[Groups(['product:list', 'product:item'])]
-    #[ApiProperty(identifier: true, )]
+    #[ApiProperty(identifier: true,)]
     private UuidV4 $uuid;
 
     #[ORM\Column(length: 255)]

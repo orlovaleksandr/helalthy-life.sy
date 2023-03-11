@@ -19,8 +19,7 @@
     </div>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOrders"
-           aria-expanded="true" aria-controls="collapseOrders">
+        <a class="nav-link collapsed" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseOrders" href="#collapseOrders">
             <i class="fas fa-fw fa-credit-card"></i>
             <span>Orders</span>
         </a>
@@ -39,8 +38,7 @@
     </div>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProducts"
-           aria-expanded="true" aria-controls="collapseProducts">
+        <a class="nav-link collapsed" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseProducts" href="#collapseProducts">
             <i class="fas fa-fw fa-cubes"></i>
             <span>Products</span>
         </a>
@@ -57,8 +55,7 @@
     </div>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCategories"
-           aria-expanded="true" aria-controls="collapseProducts">
+        <a class="nav-link collapsed" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseCategories" href="#collapseCategories">
             <i class="fas fa-fw fa-folder"></i>
             <span>Categories</span>
         </a>
@@ -78,12 +75,11 @@
 
     {% if is_granted('ROLE_SUPER_ADMIN') %}
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsers"
-               aria-expanded="true" aria-controls="collapseUsers">
+            <a class="nav-link collapsed" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseUsers" href="#collapseUsers">
                 <i class="fas fa-fw fa-user"></i>
                 <span>Users</span>
             </a>
-            <div id="collapseUsers" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div id="collapseUsers" class="collapse">
                 <div class="py-2 collapse-inner">
                     <a class="collapse-item" href="{{ path('admin_user_list') }}">All list</a>
                     <a class="collapse-item" href="{{ path('admin_user_add') }}">Add new</a>
