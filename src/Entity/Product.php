@@ -2,6 +2,11 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,25 +14,50 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Uid\UuidV4;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new Get(normalizationContext: ['groups' => 'product:item']),
+        new GetCollection(normalizationContext: ['groups' => 'product:list']),
+        new Post(
+            normalizationContext: ['groups' => 'product:list:write'],
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Sorry, but you are not an admin.'
+        ),
+        new Patch(
+            normalizationContext: ['groups' => 'product:item:write'],
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Sorry, but you are not an admin.'
+        )
+    ],
+)]
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['product:list'])]
+    #[ApiProperty(identifier: false)]
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups(['product:list', 'product:item'])]
+    #[ApiProperty(identifier: true, )]
     private UuidV4 $uuid;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2)]
+    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write'])]
     private ?string $price = null;
 
     #[ORM\Column]
+    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write'])]
     private ?int $quantity = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -50,6 +80,7 @@ class Product
     private ?string $slug = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
+    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write'])]
     private ?Category $category = null;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: CartProduct::class, orphanRemoval: true)]
