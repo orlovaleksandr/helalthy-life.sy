@@ -2,16 +2,39 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Repository\OrderProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[ApiResource(
+    operations: [
+        new Delete(
+            normalizationContext: ['groups' => 'orderProduct:item:delete'],
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Sorry, but you are not an admin.'
+        ),
+        new Get(normalizationContext: ['groups' => 'order_product:item']),
+        new GetCollection(normalizationContext: ['groups' => 'order_product:list']),
+        new Post(
+            normalizationContext: ['groups' => 'order_product:list:write'],
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Sorry, but you are not an admin.'
+        ),
+    ]
+)]
 #[ORM\Entity(repositoryClass: OrderProductRepository::class)]
 class OrderProduct
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['orderProduct:item:delete', 'order_product:item', 'order_product:list', 'order_product:list:write'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'orderProducts')]

@@ -57,18 +57,19 @@ class OrderController extends AbstractController
 
         $orderProducts = [];
 
-        foreach ($order->getOrderProducts()->getValues() as $product) {
+        foreach ($order->getOrderProducts()->getValues() as $orderProduct) {
             $orderProducts[] = [
-                'id' => $product->getId(),
+                'id' => $orderProduct->getId(),
                 'product' => [
-                    'title' => $product->getProduct()->getTitle(),
+                    'id' => $orderProduct->getProduct()->getId(),
+                    'title' => $orderProduct->getProduct()->getTitle(),
                     'category' => [
-                        'id' => $product->getProduct()->getCategory()->getId(),
-                        'title' => $product->getProduct()->getCategory()->getTitle()
+                        'id' => $orderProduct->getProduct()->getCategory()->getId(),
+                        'title' => $orderProduct->getProduct()->getCategory()->getTitle()
                     ]
                 ],
-                'quantity' => $product->getQuantity(),
-                'pricePerOne' => $product->getPricePerOne(),
+                'quantity' => $orderProduct->getQuantity(),
+                'pricePerOne' => $orderProduct->getPricePerOne(),
 
             ];
         }
