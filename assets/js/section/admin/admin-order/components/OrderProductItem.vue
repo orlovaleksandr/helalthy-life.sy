@@ -25,7 +25,7 @@
 <script>
 import {mapActions, mapState} from "vuex";
 import {getUrlViewProduct} from "../../../../utils/url-generator";
-import {Axios} from "axios";
+import {getProductInformativeTitle} from "../../../main/utils/title-formatter";
 
 export default {
   name: "OrderProductItem",
@@ -45,7 +45,7 @@ export default {
       return this.index + 1;
     },
     productTitle() {
-      return this.orderProduct.product.title;
+      return getProductInformativeTitle(this.orderProduct.product);
     },
     categoryTitle() {
       return this.orderProduct.product.category.title;

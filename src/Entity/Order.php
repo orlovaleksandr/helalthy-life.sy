@@ -2,18 +2,36 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
+#[ApiResource(
+    operations: [
+        new Get(normalizationContext: ['groups' => 'order:item']),
+        new GetCollection(normalizationContext: ['groups' => 'order:list']),
+        new Post(
+            normalizationContext: ['groups' => 'order:list:write'],
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Sorry, but you are not an admin.'
+        ),
+    ]
+)]
 class Order
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('order:item')]
     private ?int $id = null;
 
     #[ORM\Column]
@@ -24,9 +42,11 @@ class Order
     private ?User $owner = null;
 
     #[ORM\Column]
+    #[Groups('order:item')]
     private ?int $status = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('order:item')]
     private ?float $totalPrice = null;
 
     #[ORM\Column]
@@ -36,6 +56,7 @@ class Order
     private ?bool $isDeleted = null;
 
     #[ORM\OneToMany(mappedBy: 'appOrder', targetEntity: OrderProduct::class)]
+    #[Groups('order:item')]
     private Collection $orderProducts;
 
     public function __construct()

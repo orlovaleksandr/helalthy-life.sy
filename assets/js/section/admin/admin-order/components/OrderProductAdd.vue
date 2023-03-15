@@ -25,9 +25,9 @@
       >
         <option value="" disabled> - choose option - </option>
         <option
-            v-for="categoryProduct in categoryProducts"
+            v-for="categoryProduct in freeCategoryProducts"
             :key="categoryProduct.id"
-            :value="categoryProduct.id"
+            :value="categoryProduct.uuid"
         >
           {{ productTitle(categoryProduct)}}
         </option>
@@ -53,14 +53,16 @@
       >
     </div>
     <div class="col-md-3">
-      <button class="btn btn-outline-info">Details</button>
-      <button class="btn btn-outline-success">Add</button>
+      <button class="btn btn-outline-info" @click="viewDetails">Details</button>
+      <button class="btn btn-outline-success" @click="submit">Add</button>
     </div>
   </div>
 </template>
 
 <script>
-import {mapActions, mapMutations, mapState} from "vuex";
+import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+import {getProductInformativeTitle} from "../../../main/utils/title-formatter";
+import {getUrlViewProduct} from "../../../../utils/url-generator";
 
 export default {
   name: "OrderProductAdd",
@@ -75,24 +77,34 @@ export default {
     }
   },
   computed: {
-    ...mapState('products', ["categories", "categoryProducts"])
+    ...mapState('products', ["categories", "categoryProducts", "staticStore"]),
+    ...mapGetters("products", ["freeCategoryProducts"])
   },
   methods: {
     ...mapMutations('products', ["setNewProductInfo"]),
-    ...mapActions('products', ["getProductsByCategory"]),
+    ...mapActions('products', ["getProductsByCategory", "addNewOrderProduct"]),
     productTitle(product) {
-      return "#" +
-          product.id +
-          " " +
-          product.title +
-          " / P: $" +
-          product.price +
-          " / Q: " +
-          product.quantity;
+      return getProductInformativeTitle(product)
     },
     getProducts() {
       this.setNewProductInfo(this.form);
       this.getProductsByCategory()
+    },
+    viewDetails(event) {
+      event.preventDefault();
+
+      const url = getUrlViewProduct(this.staticStore.url.viewProduct, this.form.productId);
+      window.open(url, '_blank').focus();
+    },
+    submit(event) {
+      event.preventDefault();
+
+      this.setNewProductInfo(this.form);
+      this.addNewOrderProduct();
+      this.resetFormData();
+    },
+    resetFormData() {
+      Object.assign(this.$data, this.$options.data.apply(this));
     }
   }
 }
