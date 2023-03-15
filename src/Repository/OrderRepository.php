@@ -83,6 +83,17 @@ class OrderRepository extends ServiceEntityRepository
 
     }
 
+    public function recalculateOrderTotalPrice(Order $order): void
+    {
+        $orderTotalPrice = 0;
+
+        foreach ($order->getOrderProducts()->getValues() as $orderProduct) {
+            $orderTotalPrice += $orderProduct->getQuantity() * $orderProduct->getPricePerOne();
+        }
+
+        $order->setTotalPrice($orderTotalPrice);
+    }
+
     public function createOrderFromCartBySessionId(string $phpSessionId, User $user): void
     {
         $cart = $this->cartRepository->findOneBy(['sessionId' => $phpSessionId]);
