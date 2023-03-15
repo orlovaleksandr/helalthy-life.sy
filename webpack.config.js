@@ -24,6 +24,7 @@ Encore
     .addEntry('section-admin', './assets/section-admin.js')
 
     .addEntry('appAdminOrder', './assets/js/section/admin/admin-order/app.js')
+    .addEntry('appCartShow', './assets/js/section/main/cart-show/app.js')
 
     // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
     // .enableStimulusBridge('./assets/controllers.json')
