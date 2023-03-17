@@ -23,5 +23,15 @@
 {% endblock %}
 
 {% block javascripts %}
+    <script>
+        if (typeof window.staticStore === 'undefined') {
+            window.staticStore = {};
+        }
+
+        window.staticStore.urlCart = "{{ path('_api_/carts{._format}_get_collection') }}";
+        window.staticStore.urlCartProduct = "{{ path('_api_/cart_products{._format}_get_collection') }}";
+        window.staticStore.urlViewProduct = "{{ path('main_product_blank') }}";
+        window.staticStore.urlAssetImageProducts = "{{ asset('uploads/images/products') }}";
+    </script>
     {{ encore_entry_script_tags('appCartShow') }}
 {% endblock %}

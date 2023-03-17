@@ -2,26 +2,45 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Repository\CartRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CartRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(normalizationContext: ['groups' => 'cart:item']),
+        new GetCollection(normalizationContext: ['groups' => 'cart:list']),
+        new Post(
+            normalizationContext: ['groups' => 'cart:list:write'],
+            security: "is_granted('ROLE_ADMIN')",
+            securityMessage: 'Sorry, but you are not an admin.'
+        ),
+    ]
+)]
 class Cart
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['cart:item', 'cart:list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['cart:item', 'cart:list'])]
     private ?string $sessionId = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\OneToMany(mappedBy: 'cart', targetEntity: CartProduct::class, orphanRemoval: true)]
+    #[Groups(['cart:item', 'cart:list'])]
     private Collection $cartProducts;
 
     public function __construct()

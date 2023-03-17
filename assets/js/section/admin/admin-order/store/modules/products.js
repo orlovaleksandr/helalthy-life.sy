@@ -40,7 +40,7 @@ const actions = {
         const url = concatUrlByParams(state.staticStore.url.apiOrder, state.staticStore.orderId);
 
         const response = await axios.get(url, apiConfig);
-        console.log(response)
+
         if (response.data && response.status === StatusCodes.OK) {
             commit('setOrderProducts', response.data.orderProducts);
             commit('setBusyProductIds');

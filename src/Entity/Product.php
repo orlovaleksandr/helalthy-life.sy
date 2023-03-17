@@ -50,25 +50,25 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['product:list', 'product:item', 'order:item'])]
+    #[Groups(['product:list', 'product:item', 'order:item', 'cart_product:item','cart_product:list', 'cart:list', 'cart:item'])]
     #[ApiProperty(identifier: false)]
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
-    #[Groups(['product:list', 'product:item', 'order:item'])]
+    #[Groups(['product:list', 'product:item', 'order:item', 'cart_product:item', 'cart_product:list'])]
     #[ApiProperty(identifier: true,)]
     private UuidV4 $uuid;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write', 'order:item'])]
+    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write', 'order:item', 'cart_product:item','cart_product:list', 'cart:list', 'cart:item'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2)]
-    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write', 'order:item'])]
+    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write', 'order:item', 'cart_product:item','cart_product:list', 'cart:list', 'cart:item'])]
     private ?string $price = null;
 
     #[ORM\Column]
-    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write', 'order:item'])]
+    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write', 'order:item', 'cart_product:item','cart_product:list', 'cart:list', 'cart:item'])]
     private ?int $quantity = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -84,6 +84,7 @@ class Product
     private ?bool $isDeleted = null;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductImage::class, cascade: ['persist'], orphanRemoval: true)]
+    #[Groups(['cart_product:item','cart_product:list', 'cart:list', 'cart:item'])]
     private Collection $productImages;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -91,7 +92,7 @@ class Product
     private ?string $slug = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
-    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write', 'order:item'])]
+    #[Groups(['product:list', 'product:item', 'product:list:write', 'product:item:write', 'order:item', 'cart_product:item','cart_product:list', 'cart:item', 'cart:list'])]
     private ?Category $category = null;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: CartProduct::class, orphanRemoval: true)]
