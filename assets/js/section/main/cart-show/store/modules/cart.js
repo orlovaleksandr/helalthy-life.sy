@@ -1,6 +1,6 @@
 import axios from "axios";
 import {StatusCodes} from "http-status-codes";
-import {apiConfig} from "../../../utils/settings";
+import {apiConfig, apiConfigPatch} from "../../../utils/settings";
 import {concatUrlByParams} from "../../../../../utils/url-generator";
 
 const state = () => ({
@@ -35,6 +35,19 @@ const actions = {
         const response = await axios.delete(url, apiConfig);
 
         if (response.status === StatusCodes.NO_CONTENT) {
+            dispatch('getCart');
+        }
+    },
+    async updateCartProductQuantity({state, dispatch}, payload) {
+        const url = concatUrlByParams(state.staticStore.url.apiCartProduct, payload.cartProductId);
+
+        const data = {
+            "quantity": payload.quantity
+        };
+
+        const response = await axios.patch(url, data, apiConfigPatch);
+
+        if (response.status === StatusCodes.OK) {
             dispatch('getCart');
         }
     },

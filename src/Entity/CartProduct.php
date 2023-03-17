@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\CartProductRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,6 +23,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
             securityMessage: 'Sorry, but you are not an admin.'
         ),
         new Delete(),
+        new Patch(
+            normalizationContext: ['groups' => 'cart_product:item:write'],
+        )
     ]
 )]
 class CartProduct
