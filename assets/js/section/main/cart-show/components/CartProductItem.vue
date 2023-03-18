@@ -72,7 +72,6 @@ export default {
   computed: {
     ...mapState('cart', ['staticStore']),
     productImage() {
-      console.log(this.cartProduct.product)
       const productImages = this.cartProduct.product.productImages;
 
       return productImages.length ? productImages[0] : null;
@@ -81,7 +80,7 @@ export default {
       return this.quantity * this.cartProduct.product.price;
     },
     urlShowProduct() {
-      return this.staticStore.urlViewProduct + '/' + this.cartProduct.product.uuid;
+      return this.staticStore.url.viewProduct + '/' + this.cartProduct.product.uuid;
     }
   },
   methods: {

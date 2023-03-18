@@ -54,27 +54,32 @@ class OrderRepository extends ServiceEntityRepository
         $this->save($order, true);
     }
 
+    public function addOrderProductsFromCart(Order $order, int $cartId)
+    {
+        $cart = $this->cartRepository->findOneBy(['id' => $cartId]);
+
+        if ($cart) {
+            foreach ($cart->getCartProducts()->getValues() as $cartProduct) {
+                $orderProduct = new OrderProduct();
+                $orderProduct->setAppOrder($order);
+                $orderProduct->setQuantity($cartProduct->getQuantity());
+                $orderProduct->setPricePerOne($cartProduct->getProduct()->getPrice());
+                $orderProduct->setProduct($cartProduct->getProduct());
+
+                $order->addOrderProduct($orderProduct);
+                $this->getEntityManager()->persist($orderProduct);
+            }
+        }
+    }
+
     public function createOrderFromCart(Cart $cart, User $user): void
     {
         $order = new Order();
         $order->setOwner($user);
         $order->setStatus(OrderStatus::CREATED->value);
-        $orderTotalPrice = 0;
 
-        foreach ($cart->getCartProducts()->getValues() as $cartProduct) {
-            $orderProduct = new OrderProduct();
-            $orderProduct->setAppOrder($order);
-            $orderProduct->setQuantity($cartProduct->getQuantity());
-            $orderProduct->setPricePerOne($cartProduct->getProduct()->getPrice());
-            $orderProduct->setProduct($cartProduct->getProduct());
-
-            $orderTotalPrice += $orderProduct->getQuantity() * $orderProduct->getPricePerOne();
-
-            $order->addOrderProduct($orderProduct);
-            $this->getEntityManager()->persist($orderProduct);
-        }
-
-        $order->setTotalPrice($orderTotalPrice);
+        $this->addOrderProductsFromCart($order, $cart->getId());
+        $this->recalculateOrderTotalPrice($order);
 
         $this->getEntityManager()->persist($order);
         $this->getEntityManager()->flush();

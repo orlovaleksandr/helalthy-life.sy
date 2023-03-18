@@ -55,7 +55,7 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
-    #[Groups(['product:list', 'product:item', 'order:item', 'cart_product:item', 'cart_product:list'])]
+    #[Groups(['product:list', 'product:item', 'order:item', 'cart_product:item', 'cart_product:list', 'cart:list', 'cart:item'])]
     #[ApiProperty(identifier: true,)]
     private UuidV4 $uuid;
 

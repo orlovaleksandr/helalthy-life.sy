@@ -31,10 +31,12 @@
         "http-status-codes": "^2.2.0",
         "jquery": "^3.6.4",
         "jquery.easing": "^1.4.1",
+        "lodash": "^4.17.21",
         "node": "^19.6.1",
         "popper.js": "^1.14.3",
         "vue": "^3.2.47",
         "vue-loader": "^17.0.1",
+        "vue-lodash": "^2.1.2",
         "vue-template-compiler": "^2.7.14",
         "vuex": "^4.1.0"
     }
