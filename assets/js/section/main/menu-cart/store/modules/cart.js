@@ -2,23 +2,16 @@ import axios from "axios";
 import {StatusCodes} from "http-status-codes";
 import {apiConfig, apiConfigPatch} from "../../../utils/settings";
 import {concatUrlByParams} from "../../../../../utils/url-generator";
+import _ from 'lodash';
 
-function getAlertStructure() {
-    return {
-        type: null,
-        message: null
-    };
-}
 const state = () => ({
     cart: {},
-    alert: getAlertStructure(),
-    isSentForm: false,
     staticStore: {
         url: {
             apiCart: window.staticStore.urlCart,
             apiCartProduct: window.staticStore.urlCartProduct,
-            apiOrder: window.staticStore.urlOrder,
             viewProduct: window.staticStore.urlViewProduct,
+            viewCart: window.staticStore.urlViewCart,
             assetImageProducts: window.staticStore.urlAssetImageProducts
         }
     }
@@ -43,7 +36,7 @@ const getters = {
 };
 
 const actions = {
-    async getCart({state, commit}) {
+    async getCart({state, commit, dispatch}) {
         const url = state.staticStore.url.apiCart;
 
         const response = await axios.get(url, apiConfig);
@@ -55,10 +48,10 @@ const actions = {
         ) {
             commit('setCart', response.data["hydra:member"][0]);
         } else {
-            commit('setAlert', {type: 'info', message: 'Your cart is empty...'});
+            dispatch('createCart');
         }
     },
-    async cleanAlert({state, commit}) {
+    async cleanCart({state, commit}) {
         const url = concatUrlByParams(state.staticStore.url.apiCart, state.cart.id);
 
         const response = await axios.delete(url, apiConfig);
@@ -67,7 +60,6 @@ const actions = {
             commit('setCart', {});
         }
     },
-
     async removeCartProduct({state, commit,  dispatch}, cartProductId) {
         const url = concatUrlByParams(state.staticStore.url.apiCartProduct, cartProductId);
 
@@ -77,11 +69,31 @@ const actions = {
             dispatch('getCart');
         }
     },
-    async updateCartProductQuantity({state, dispatch}, payload) {
-        const url = concatUrlByParams(state.staticStore.url.apiCartProduct, payload.cartProductId);
+    addCartProduct({state, dispatch}, productData) {
+        const existsCartProduct = state.cart.cartProducts.find(
+            cartProduct => cartProduct.product.uuid === productData.uuid
+        );
+
+        if(existsCartProduct) {
+            dispatch('addExistCartProduct', existsCartProduct);
+        } else {
+            dispatch('addNewCartProduct', productData);
+        }
+    },
+    async createCart({state, dispatch}) {
+        const url = state.staticStore.url.apiCart;
+
+        const response = await axios.post(url, {}, apiConfig);
+
+        if (response.data && response.status === StatusCodes.CREATED) {
+            dispatch('getCart');
+        }
+    },
+    async addExistCartProduct({state, dispatch}, existsCartProduct) {
+        const url = concatUrlByParams(state.staticStore.url.apiCartProduct, existsCartProduct.id);
 
         const data = {
-            "quantity": payload.quantity
+            "quantity": existsCartProduct.quantity + 1
         };
 
         const response = await axios.patch(url, data, apiConfigPatch);
@@ -90,39 +102,27 @@ const actions = {
             dispatch('getCart');
         }
     },
-    async makeOrder({state, commit, dispatch}) {
-        const url = state.staticStore.url.apiOrder;
-
+    async addNewCartProduct({state, dispatch}, productData) {
+        const url = state.staticStore.url.apiCartProduct;
         const data = {
-            cartId: state.cart.id,
+            cart: '/api/carts/' + state.cart.id,
+            product: '/api/products/' + productData.uuid,
+            quantity: 1
         };
 
         const response = await axios.post(url, data, apiConfig);
 
         if (response.data && response.status === StatusCodes.CREATED) {
-            commit('setAlert', {type: 'success', message: 'Thank you for your purchase!'});
-            commit('setIsSentForm', true);
-            dispatch('cleanAlert');
+            dispatch('getCart')
         }
     },
+
 };
 
 const mutations = {
     setCart(state,cart) {
         state.cart = cart;
     },
-    setAlert(state, model) {
-        state.alert = {
-            type: model.type,
-            message: model.message
-        }
-    },
-    cleanAlert(state) {
-        state.alert = getAlertStructure();
-    },
-    setIsSentForm(state, value) {
-        state.isSentForm = value;
-    }
 };
 
 export default {

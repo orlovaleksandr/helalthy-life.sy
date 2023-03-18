@@ -42,6 +42,7 @@
 .cart-dropdown-window {
     display: block;
     right: 0;
+    top: 60px;
     left: auto;
     width: 300px;
     z-index: 100;

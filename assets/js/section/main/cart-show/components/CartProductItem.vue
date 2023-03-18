@@ -53,7 +53,7 @@
 
 import {mapActions, mapState} from "vuex";
 
-export default {
+export default  {
   name: "CartProductItem",
   props: {
     cartProduct: {

@@ -57,7 +57,6 @@ class MakeOrderFromCartSubscriber implements EventSubscriberInterface
         $this->orderRepository->recalculateOrderTotalPrice($order);
 
         $order->setStatus(OrderStatus::CREATED->value);
-
     }
 
     public static function getSubscribedEvents(): array
