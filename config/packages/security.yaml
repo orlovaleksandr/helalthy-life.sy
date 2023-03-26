@@ -27,7 +27,11 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\Authenticator\Main\LoginFormAuthetificatorAuthenticator
+            custom_authenticator:
+                - App\Security\Authenticator\Main\LoginFormAuthetificatorAuthenticator
+                - App\Security\Authenticator\Main\FacebookAuthenticator
+            entry_point: App\Security\Authenticator\Main\LoginFormAuthetificatorAuthenticator
+
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800 # 1week
