@@ -30,6 +30,7 @@ security:
             custom_authenticator:
                 - App\Security\Authenticator\Main\LoginFormAuthetificatorAuthenticator
                 - App\Security\Authenticator\Main\FacebookAuthenticator
+                - App\Security\Authenticator\Main\GoogleAuthenticator
             entry_point: App\Security\Authenticator\Main\LoginFormAuthetificatorAuthenticator
 
             remember_me:

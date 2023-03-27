@@ -55,6 +55,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Order::class)]
     private Collection $orders;
 
+    #[ORM\Column(length: 25, nullable: true)]
+    private ?string $facebookId = null;
+
+    #[ORM\Column(length: 25, nullable: true)]
+    private ?string $googleId = null;
+
     public function __construct()
     {
         $this->isDeleted = false;
@@ -229,6 +235,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $order->setOwner(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFacebookId(): ?string
+    {
+        return $this->facebookId;
+    }
+
+    public function setFacebookId(?string $facebookId): self
+    {
+        $this->facebookId = $facebookId;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): self
+    {
+        $this->googleId = $googleId;
 
         return $this;
     }
